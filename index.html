@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Cuộc Đua Kỳ Thú: Bí Mật Của Những Lực Vô Hình - Hóa Học 10</title>
+  <!-- Google Fonts: Quicksand & Nunito cho trải nghiệm đọc mượt mà, rõ nét trên điện thoại -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Nunito', 'Quicksand', 'sans-serif'],
+            display: ['Quicksand', 'Nunito', 'sans-serif'],
+          },
+          colors: {
+            nature: {
+              cream: '#FDFBF7',
+              sand: '#F5EFE6',
+              emerald: '#10B981',
+              emeraldDark: '#047857',
+              ocean: '#0EA5E9',
+              oceanDark: '#0369A1',
+              sun: '#F59E0B',
+              coral: '#F97316',
+              forest: '#1E293B',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Đảm bảo không bao giờ tràn ngang và hiển thị trọn vẹn từng chữ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #E0F2FE 0%, #ECFDF5 50%, #FEF3C7 100%);
+      color: #1E293B;
+      font-family: 'Nunito', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Đảm bảo text không bao giờ bị cắt xén hay mất chữ */
+    p, span, div, button, h1, h2, h3, h4, label {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: normal;
+      white-space: normal;
+    }
+
+    /* Định dạng chỉ số hóa học chuẩn đẹp */
+    sub, sup {
+      font-size: 74%;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+    }
+    sup { top: -0.45em; }
+    sub { bottom: -0.22em; }
+
+    /* Hiệu ứng chuyển động mềm mại */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop {
+      animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pulseBorder {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    }
+    .pulse-target {
+      animation: pulseBorder 2s infinite;
+    }
+
+    /* Nút bấm thân thiện thao tác chạm điện thoại */
+    .touch-btn {
+      min-height: 48px;
+      transition: all 0.18s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .touch-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    /* Canvas pháo giấy toàn màn hình không cản click */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Khung thẻ chứng nhận phong cách thám hiểm cao cấp */
+    .certificate-card {
+      background: linear-gradient(145deg, #FFFFFF 0%, #F0FDF4 60%, #FEFCE8 100%);
+      border: 3px solid #10B981;
+      box-shadow: 0 15px 35px -5px rgba(4, 120, 87, 0.18), 0 0 0 6px rgba(16, 185, 129, 0.12);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Canvas pháo giấy chúc mừng -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Container chính tối ưu Mobile-First (max-width: 540px) -->
+  <div id="app-wrapper" class="w-full max-w-[540px] mx-auto px-3 sm:px-4 py-3 sm:py-5 flex-grow flex flex-col">
+
+    <!-- HEADER THANH TRẠNG THÁI & ĐIỂM SỐ (Ẩn ở màn hình chào) -->
+    <header id="game-header" class="hidden bg-white/95 backdrop-blur-md rounded-2xl p-3.5 mb-4 shadow-md border border-emerald-100 sticky top-2 z-40">
+      <div class="flex items-center justify-between gap-2 mb-2.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="text-xl flex-shrink-0" aria-hidden="true">🧭</span>
+          <div class="leading-tight">
+            <div id="header-player-name" class="font-extrabold text-slate-800 text-sm sm:text-base">Nhà Thám Hiểm</div>
+            <div id="header-player-class" class="text-xs font-semibold text-emerald-700">Lớp 10</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <!-- Nút bật/tắt âm thanh -->
+          <button id="sound-toggle-btn" onclick="toggleSound()" aria-label="Bật hoặc tắt âm thanh"
+            class="w-10 h-10 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 flex items-center justify-center text-lg shadow-sm active:scale-95 transition">
+            🔊
+          </button>
+          <!-- Bảng điểm trực tiếp -->
+          <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5">
+            <span class="text-sm">🏆</span>
+            <span id="header-score" class="font-black text-base sm:text-lg">0</span>
+            <span class="text-xs font-bold opacity-90">/100đ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bản đồ hành trình 5 Chặng đua -->
+      <div class="relative pt-1 pb-1">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-500 mb-1.5 px-1">
+          <span id="stage-label" class="text-emerald-700 font-extrabold">Chặng 1/5: Rừng Băng Giá</span>
+          <span id="progress-percent" class="text-slate-600">0%</span>
+        </div>
+        <!-- Thanh ray tiến trình -->
+        <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden p-0.5 shadow-inner">
+          <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-emerald-400 via-teal-500 to-sky-500 rounded-full transition-all duration-500" style="width: 10%;"></div>
+        </div>
+        <!-- 5 Mốc trạm dừng chân -->
+        <div class="flex justify-between items-center mt-2 px-0.5">
+          <div id="node-1" class="flex flex-col items-center">
+            <span class="w-7 h-7 rounded-full bg-emerald-500 text-white text-xs font-black flex items-center justify-center shadow">❄️</span>
+          </div>
+          <div class="h-0.5 flex-grow bg-slate-200 mx-1" id="line-1-2"></div>
+          <div id="node-2" class="flex flex-col items-center">
+            <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 text-xs font-black flex items-center justify-center">🏜️</span>
+          </div>
+          <div class="h-0.5 flex-grow bg-slate-200 mx-1" id="line-2-3"></div>
+          <div id="node-3" class="flex flex-col items-center">
+            <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 text-xs font-black flex items-center justify-center">🦎</span>
+          </div>
+          <div class="h-0.5 flex-grow bg-slate-200 mx-1" id="line-3-4"></div>
+          <div id="node-4" class="flex flex-col items-center">
+            <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 text-xs font-black flex items-center justify-center">🧪</span>
+          </div>
+          <div class="h-0.5 flex-grow bg-slate-200 mx-1" id="line-4-5"></div>
+          <div id="node-5" class="flex flex-col items-center">
+            <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 text-xs font-black flex items-center justify-center">🏔️</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH (RENDER TỪNG MÀN HÌNH) -->
+    <main id="main-content" class="flex-grow flex flex-col justify-center">
+      <!-- Nội dung sẽ được JavaScript render linh hoạt -->
+    </main>
+
+    <!-- FOOTER NHỎ GỌN -->
+    <footer class="text-center text-xs text-slate-500 mt-5 pb-2 font-semibold">
+      Hóa học 10 • Chuyên đề: Liên kết Hydrogen & Tương tác Van der Waals
+    </footer>
+  </div>
+
+  <!-- HỘP THÔNG BÁO TÙY CHỈNH (THAY THẾ HOÀN TOÀN ALERT) -->
+  <div id="custom-toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden w-[92%] max-w-[460px]">
+    <div id="custom-toast-box" class="bg-slate-900 text-white px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700">
+      <span id="custom-toast-icon" class="text-xl flex-shrink-0">⚠️</span>
+      <p id="custom-toast-msg" class="text-sm font-bold leading-snug"></p>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       1. HỆ THỐNG ÂM THANH WEB AUDIO API (KHÔNG CẦN FILE ÂM THANH NGOÀI)
+       ========================================================================= */
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          audioCtx = new AudioContext();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('sound-toggle-btn');
+      if (btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) {
+        initAudio();
+        playTone(660, 'sine', 0.12, 0.15);
+      }
+    }
+
+    function playTone(freq, type, duration, vol = 0.2, delay = 0) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + delay);
+        osc.stop(audioCtx.currentTime + delay + duration);
+      } catch (e) {
+        // Bỏ qua lỗi âm thanh nếu trình duyệt chặn tự động phát
+      }
+    }
+
+    function playCorrectSound() {
+      playTone(523.25, 'triangle', 0.15, 0.22, 0);     // C5
+      playTone(659.25, 'triangle', 0.15, 0.22, 0.1);   // E5
+      playTone(783.99, 'triangle', 0.28, 0.25, 0.2);   // G5
+    }
+
+    function playWrongSound() {
+      playTone(260, 'sawtooth', 0.2, 0.16, 0);
+      playTone(210, 'sawtooth', 0.28, 0.16, 0.15);
+    }
+
+    function playClickSound() {
+      playTone(480, 'sine', 0.06, 0.1, 0);
+    }
+
+    function playVictorySound() {
+      const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50];
+      const times = [0, 0.12, 0.24, 0.36, 0.55, 0.70];
+      notes.forEach((n, idx) => {
+        playTone(n, 'triangle', 0.3, 0.24, times[idx]);
+      });
+    }
+
+    /* =========================================================================
+       2. HỆ THỐNG THÔNG BÁO TOAST THÂN THIỆN (KHÔNG DÙNG ALERT)
+       ========================================================================= */
+    let toastTimer = null;
+    function showToast(message, icon = '💡') {
+      const toast = document.getElementById('custom-toast');
+      const msgEl = document.getElementById('custom-toast-msg');
+      const iconEl = document.getElementById('custom-toast-icon');
+      msgEl.innerHTML = message;
+      iconEl.textContent = icon;
+      toast.classList.remove('hidden');
+      toast.classList.add('animate-pop');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3200);
+    }
+
+    /* =========================================================================
+       3. DỮ LIỆU KHOA HỌC CHUẨN XÁC CHO 5 CHẶNG ĐUA (TỔNG 100 ĐIỂM)
+       ========================================================================= */
+    const GAME_DATA = {
+      stages: [
+        {
+          id: 1,
+          shortTitle: 'Rừng Băng Giá',
+          title: 'Chặng 1: Khu Rừng Băng Giá & Bí Ẩn Hồ Nước Đóng Băng',
+          icon: '❄️',
+          themeBg: 'from-sky-500 to-cyan-600',
+          badgeBg: 'bg-sky-100 text-sky-800 border-sky-200',
+          story: 'Mùa đông khắc nghiệt ở vùng cực, nhiệt độ xuống dưới 0°C khiến mặt hồ đóng băng dày đặc. Thế nhưng bên dưới lớp băng ấy, đàn cá vẫn tung tăng bơi lội khỏe mạnh! Hãy giải mã phép màu sinh tồn này của tự nhiên.',
+          maxPoints: 20
+        },
+        {
+          id: 2,
+          shortTitle: 'Sa Mạc Lửa',
+          title: 'Chặng 2: Sa Mạc Lửa & Cuộc Đua Bay Hơi',
+          icon: '🏜️',
+          themeBg: 'from-amber-500 to-orange-600',
+          badgeBg: 'bg-amber-100 text-amber-900 border-amber-200',
+          story: 'Băng qua sa mạc nắng cháy, ánh mặt trời thiêu đốt khiến các chất lỏng thi nhau bay hơi. Nhà thám hiểm cần nắm vững quy luật nhiệt độ sôi và khả năng hòa tan của các phân tử để bảo toàn nguồn nước quý giá!',
+          maxPoints: 20
+        },
+        {
+          id: 3,
+          shortTitle: 'Vách Đá Cheo Leo',
+          title: 'Chặng 3: Vách Đá Cheo Leo & Siêu Năng Lực Của Tắc Kè',
+          icon: '🦎',
+          themeBg: 'from-emerald-500 to-teal-600',
+          badgeBg: 'bg-emerald-100 text-emerald-900 border-emerald-200',
+          story: 'Trên vách đá dựng đứng trơn nhẵn như gương, một chú tắc kè hoa chạy thoăn thoắt mà chẳng hề có chất keo dính hay giác hút nào dưới chân. Bí mật nằm ở hàng triệu sợi lông siêu nhỏ tương tác với bề mặt đá!',
+          maxPoints: 20
+        },
+        {
+          id: 4,
+          shortTitle: 'Đầm Lầy Khí Hiếm',
+          title: 'Chặng 4: Đầm Lầy Halogen & Hành Trình Của Những Gã Khổng Lồ',
+          icon: '🧪',
+          themeBg: 'from-indigo-500 to-purple-600',
+          badgeBg: 'bg-indigo-100 text-indigo-900 border-indigo-200',
+          story: 'Tiến sâu vào vùng đầm lầy sương mù, bạn bắt gặp gia đình nguyên tố Halogen biến hóa kỳ ảo từ thể khí sang lỏng rồi hóa rắn, cùng chuỗi xoắn kép DNA đang lưu giữ mật mã sự sống của muôn loài.',
+          maxPoints: 20
+        },
+        {
+          id: 5,
+          shortTitle: 'Đỉnh Núi Trí Tuệ',
+          title: 'Chặng 5: Đỉnh Núi Trí Tuệ – Mở Khóa Rương Kho Báu',
+          icon: '🏔️',
+          themeBg: 'from-rose-500 to-amber-500',
+          badgeBg: 'bg-rose-100 text-rose-900 border-rose-200',
+          story: 'Chúc mừng bạn đã đặt chân lên Đỉnh Núi Trí Tuệ! Trước mặt bạn là Rương Kho Báu Tri Thức. Hãy lắp ghép chính xác 4 mảnh ghép khoa học cuối cùng để mở khóa rương báu và nhận danh hiệu cao quý!',
+          maxPoints: 20
+        }
+      ]
+    };
+
+    /* =========================================================================
+       4. QUẢN LÝ TRẠNG THÁI TRÒ CHƠI (STATE)
+       ========================================================================= */
+    let state = {
+      screen: 'welcome', // 'welcome' | 'stage' | 'summary'
+      playerName: '',
+      playerClass: '',
+      currentStage: 1, // 1..5
+      stageScores: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+      // Lưu trữ câu trả lời và trạng thái đã chấm của từng câu
+      answers: {
+        q1: null,
+        q2: null,
+        q3Order: [], // Mảng các id chất theo thứ tự tăng dần nhiệt độ sôi
+        q4: null,
+        q5: { a: null, b: null, c: null, d: null },
+        q6: null,
+        q7: null,
+        q8Blanks: [null, null, null, null] // 4 chỗ trống
+      },
+      checked: {
+        q1: false,
+        q2: false,
+        q3: false,
+        q4: false,
+        q5: false,
+        q6: false,
+        q7: false,
+        q8: false
+      },
+      activeBlankIndex: 0 // Cho câu 8 điền thẻ
+    };
+
+    function getTotalScore() {
+      return Object.values(state.stageScores).reduce((sum, val) => sum + val, 0);
+    }
+
+    /* =========================================================================
+       5. CẬP NHẬT THANH HEADER & TIẾN TRÌNH HÀNH TRÌNH
+       ========================================================================= */
+    function updateHeader() {
+      const header = document.getElementById('game-header');
+      if (state.screen === 'welcome') {
+        header.classList.add('hidden');
+        return;
+      }
+      header.classList.remove('hidden');
+
+      document.getElementById('header-player-name').textContent = state.playerName || 'Nhà Thám Hiểm';
+      document.getElementById('header-player-class').textContent = state.playerClass ? `Lớp ${state.playerClass}` : 'Chiến binh Hóa 10';
+      document.getElementById('header-score').textContent = getTotalScore();
+
+      const stageObj = GAME_DATA.stages[state.currentStage - 1];
+      if (state.screen === 'summary') {
+        document.getElementById('stage-label').textContent = '🎉 Đã chinh phục 5/5 Chặng đua!';
+        document.getElementById('progress-percent').textContent = '100%';
+        document.getElementById('progress-bar-fill').style.width = '100%';
+      } else {
+        document.getElementById('stage-label').textContent = `Chặng ${state.currentStage}/5: ${stageObj.shortTitle}`;
+        const pct = Math.round(((state.currentStage - 1) / 5) * 100 + 10);
+        document.getElementById('progress-percent').textContent = `${pct}%`;
+        document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+      }
+
+      // Cập nhật 5 node biểu tượng trạm
+      const icons = ['❄️', '🏜️', '🦎', '🧪', '🏔️'];
+      for (let i = 1; i <= 5; i++) {
+        const node = document.getElementById(`node-${i}`);
+        const span = node.querySelector('span');
+        if (state.screen === 'summary' || i < state.currentStage) {
+          span.className = 'w-7 h-7 rounded-full bg-emerald-500 text-white text-xs font-black flex items-center justify-center shadow ring-2 ring-emerald-200';
+          span.textContent = '✓';
+        } else if (i === state.currentStage) {
+          span.className = 'w-8 h-8 rounded-full bg-amber-400 text-slate-900 text-sm font-black flex items-center justify-center shadow-md ring-2 ring-amber-200 scale-110 transition';
+          span.textContent = icons[i - 1];
+        } else {
+          span.className = 'w-7 h-7 rounded-full bg-slate-200 text-slate-500 text-xs font-black flex items-center justify-center';
+          span.textContent = icons[i - 1];
+        }
+
+        if (i < 5) {
+          const line = document.getElementById(`line-${i}-${i + 1}`);
+          line.className = (state.screen === 'summary' || i < state.currentStage)
+            ? 'h-1 flex-grow bg-emerald-400 mx-1 rounded-full transition-all'
+            : 'h-0.5 flex-grow bg-slate-200 mx-1';
+        }
+      }
+    }
+
+    /* =========================================================================
+       6. RENDER MÀN HÌNH CHÀO MỪNG (NHẬP TÊN & LỚP)
+       ========================================================================= */
+    function renderWelcomeScreen() {
+      const main = document.getElementById('main-content');
+      main.innerHTML = `
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 shadow-xl border border-emerald-100 animate-pop">
+          <!-- Huy hiệu & Minh họa thiên nhiên -->
+          <div class="flex flex-col items-center text-center mb-5">
+            <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs sm:text-sm mb-3 border border-emerald-200">
+              <span>🌿</span> PHIẾU HỌC TẬP TƯƠNG TÁC • HÓA HỌC 10
+            </div>
+
+            <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-500 flex items-center justify-center shadow-lg mb-3.5 animate-float">
+              <span class="text-5xl" role="img" aria-label="La bàn thám hiểm">🧭</span>
+            </div>
+
+            <h1 class="font-display font-black text-2xl sm:text-3xl text-slate-800 leading-tight mb-2">
+              CUỘC ĐUA KỲ THÚ:<br/>
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-sky-600">
+                BÍ MẬT CỦA NHỮNG LỰC VÔ HÌNH
+              </span>
+            </h1>
+
+            <p class="text-slate-600 text-sm sm:text-base font-medium leading-relaxed">
+              Khám phá những kỳ quan thiên nhiên qua lăng kính <strong>Liên kết Hydrogen</strong> và <strong>Tương tác Van der Waals</strong>. Vượt qua 5 chặng đua để chinh phục tối đa <strong>100 điểm</strong>!
+            </p>
+          </div>
+
+          <!-- Thẻ tóm tắt 5 chặng đua -->
+          <div class="bg-slate-50 rounded-2xl p-3.5 mb-5 border border-slate-200/80">
+            <div class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2.5 flex items-center gap-1.5">
+              <span>🗺️</span> Lộ trình 5 Trạm Dừng Chân (20đ / chặng)
+            </div>
+            <div class="grid grid-cols-1 gap-2 text-sm font-bold text-slate-700">
+              <div class="flex items-center gap-2.5 bg-white p-2 rounded-xl border border-slate-100">
+                <span class="text-lg">❄️</span>
+                <span>Chặng 1: Khu rừng Băng Giá & Bí ẩn hồ nước</span>
+              </div>
+              <div class="flex items-center gap-2.5 bg-white p-2 rounded-xl border border-slate-100">
+                <span class="text-lg">🏜️</span>
+                <span>Chặng 2: Sa mạc Lửa & Cuộc đua bay hơi</span>
+              </div>
+              <div class="flex items-center gap-2.5 bg-white p-2 rounded-xl border border-slate-100">
+                <span class="text-lg">🦎</span>
+                <span>Chặng 3: Vách đá Cheo Leo & Siêu năng lực tắc kè</span>
+              </div>
+              <div class="flex items-center gap-2.5 bg-white p-2 rounded-xl border border-slate-100">
+                <span class="text-lg">🧪</span>
+                <span>Chặng 4: Đầm lầy Halogen & Mật mã DNA</span>
+              </div>
+              <div class="flex items-center gap-2.5 bg-white p-2 rounded-xl border border-slate-100">
+                <span class="text-lg">🏔️</span>
+                <span>Chặng 5: Đỉnh Núi Trí Tuệ – Rương kho báu</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form nhập thông tin học sinh -->
+          <form onsubmit="startAdventure(event)" class="space-y-3.5">
+            <div>
+              <label for="input-name" class="block text-sm font-extrabold text-slate-700 mb-1.5">
+                ✍️ Họ và tên Nhà thám hiểm <span class="text-rose-500">*</span>
+              </label>
+              <input id="input-name" type="text" required placeholder="Ví dụ: Nguyễn Minh Anh"
+                value="${state.playerName}"
+                class="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:outline-none text-base font-bold text-slate-800 bg-white transition" />
+            </div>
+
+            <div>
+              <label for="input-class" class="block text-sm font-extrabold text-slate-700 mb-1.5">
+                🏫 Lớp học của bạn <span class="text-rose-500">*</span>
+              </label>
+              <input id="input-class" type="text" required placeholder="Ví dụ: 10A1"
+                value="${state.playerClass}"
+                class="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:outline-none text-base font-bold text-slate-800 bg-white transition" />
+            </div>
+
+            <button type="submit"
+              class="touch-btn w-full mt-2 py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 hover:from-emerald-600 hover:to-sky-600 text-white font-black text-base sm:text-lg shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2">
+              <span>🚀 BẮT ĐẦU HÀNH TRÌNH NGAY</span>
+            </button>
+          </form>
+        </div>
+      `;
+    }
+
+    function startAdventure(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById('input-name').value.trim();
+      const classVal = document.getElementById('input-class').value.trim();
+      if (!nameVal || !classVal) {
+        showToast('Vui lòng nhập đầy đủ Họ tên và Lớp để ghi danh lên Thẻ Chứng Nhận nhé!', '🧭');
+        return;
+      }
+      initAudio();
+      playCorrectSound();
+      state.playerName = nameVal;
+      state.playerClass = classVal;
+      state.screen = 'stage';
+      state.currentStage = 1;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* =========================================================================
+       7. RENDER TỪNG CHẶNG ĐUA (CHẶNG 1 ĐẾN CHẶNG 5)
+       ========================================================================= */
+    function renderStageScreen() {
+      const stage = GAME_DATA.stages[state.currentStage - 1];
+      const main = document.getElementById('main-content');
+
+      let stageQuestionsHTML = '';
+      if (state.currentStage === 1) stageQuestionsHTML = renderStage1HTML();
+      if (state.currentStage === 2) stageQuestionsHTML = renderStage2HTML();
+      if (state.currentStage === 3) stageQuestionsHTML = renderStage3HTML();
+      if (state.currentStage === 4) stageQuestionsHTML = renderStage4HTML();
+      if (state.currentStage === 5) stageQuestionsHTML = renderStage5HTML();
+
+      const isStageCompleted = checkStageComplete(state.currentStage);
+
+      main.innerHTML = `
+        <div class="space-y-4 animate-pop">
+          <!-- Thẻ Bối Cảnh Thiên Nhiên của Chặng -->
+          <div class="rounded-3xl overflow-hidden shadow-lg bg-white border border-slate-100">
+            <div class="bg-gradient-to-r ${stage.themeBg} p-4 sm:p-5 text-white">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-extrabold">
+                  ${stage.icon} TRẠM DỪNG CHÂN SỐ ${stage.id}
+                </span>
+                <span class="px-3 py-1 rounded-full bg-black/20 text-xs font-extrabold">
+                  Điểm chặng: ${state.stageScores[stage.id]}/${stage.maxPoints}đ
+                </span>
+              </div>
+              <h2 class="font-display font-black text-xl sm:text-2xl leading-snug">
+                ${stage.title}
+              </h2>
+            </div>
+
+            <div class="p-4 sm:p-5 bg-gradient-to-b from-slate-50 to-white">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl flex-shrink-0 mt-0.5">
+                  🔭
+                </div>
+                <p class="text-slate-700 text-sm sm:text-base font-semibold leading-relaxed">
+                  ${stage.story}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nội dung câu hỏi tương tác của Chặng -->
+          ${stageQuestionsHTML}
+
+          <!-- Nút Điều hướng Chuyển Chặng / Về Đích -->
+          <div class="pt-2 pb-4">
+            ${isStageCompleted ? `
+              <button onclick="nextStage()"
+                class="touch-btn w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-base sm:text-lg shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 animate-pop">
+                <span>${state.currentStage < 5 ? `TIẾP TỤC SANG CHẶNG ${state.currentStage + 1} ➡️` : '🏆 HOÀN THÀNH & NHẬN CHỨNG NHẬN'}</span>
+              </button>
+            ` : `
+              <div class="text-center p-3.5 rounded-2xl bg-white/80 border border-dashed border-slate-300 text-slate-500 text-xs sm:text-sm font-bold">
+                💡 Hãy hoàn thành và bấm <strong>"Chốt đáp án"</strong> cho tất cả thử thách ở chặng này để mở đường đi tiếp nhé!
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function checkStageComplete(stageNum) {
+      if (stageNum === 1) return state.checked.q1 && state.checked.q2;
+      if (stageNum === 2) return state.checked.q3 && state.checked.q4;
+      if (stageNum === 3) return state.checked.q5;
+      if (stageNum === 4) return state.checked.q6 && state.checked.q7;
+      if (stageNum === 5) return state.checked.q8;
+      return false;
+    }
+
+    function nextStage() {
+      playClickSound();
+      if (state.currentStage < 5) {
+        state.currentStage++;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        state.screen = 'summary';
+        playVictorySound();
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        launchConfetti();
+      }
+    }
+
+    /* =========================================================================
+       CHẶNG 1: RỪNG BĂNG GIÁ (2 CÂU TRẮC NGHIỆM TÌNH HUỐNG - 20 ĐIỂM)
+       ========================================================================= */
+    function renderStage1HTML() {
+      const q1Options = [
+        {
+          id: 'A',
+          text: 'Do các phân tử H<sub>2</sub>O trong nước đá liên kết hydrogen với nhau tạo cấu trúc tinh thể rỗng (tứ diện đều), làm thể tích tăng nên khối lượng riêng của nước đá nhỏ hơn nước lỏng.'
+        },
+        {
+          id: 'B',
+          text: 'Do khi nước đóng băng, các liên kết cộng hóa trị O–H bị đứt gãy hoàn toàn giải phóng khí O<sub>2</sub> đẩy tảng băng nổi lên mặt hồ.'
+        },
+        {
+          id: 'C',
+          text: 'Do tương tác Van der Waals giữa các phân tử H<sub>2</sub>O biến mất hoàn toàn ở 0°C khiến các phân tử đẩy nhau ra xa.'
+        },
+        {
+          id: 'D',
+          text: 'Do nước đá hấp thụ nhiệt từ ánh sáng mặt trời nên giãn nở mạnh và nhẹ hơn nước lỏng ở dưới đáy hồ.'
+        }
+      ];
+
+      const q2Options = [
+        {
+          id: 'A',
+          text: 'Phân tử nào cũng tạo được liên kết hydrogen miễn là trong công thức phân tử có chứa nguyên tử hydrogen (H).'
+        },
+        {
+          id: 'B',
+          text: 'Nguyên tử H liên kết với nguyên tử có độ âm điện lớn (như F, O, N) và nguyên tử F, O, N ở phân tử khác còn cặp electron hóa trị chưa liên kết.'
+        },
+        {
+          id: 'C',
+          text: 'Hai nguyên tử hydrogen ở hai phân tử khác nhau trực tiếp dùng chung một cặp electron hóa trị.'
+        },
+        {
+          id: 'D',
+          text: 'Nguyên tử H liên kết với nguyên tử kim loại kiềm (như Na, K) tạo ra lực hút tĩnh điện mạnh.'
+        }
+      ];
+
+      return `
+        <!-- CÂU 1 -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-sky-100 text-sky-800 font-extrabold text-xs">Câu 1 • 10 điểm</span>
+            ${state.checked.q1 ? (state.answers.q1 === 'A'
+              ? '<span class="text-emerald-600 font-black text-sm">✅ +10 điểm</span>'
+              : '<span class="text-rose-600 font-black text-sm">❌ 0 điểm</span>') : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-3.5">
+            Vì sao nước đá lại nổi trên mặt nước lỏng, tạo thành lớp áo cách nhiệt bảo vệ cá và sinh vật dưới đáy hồ vào mùa đông?
+          </p>
+
+          <div class="space-y-2.5">
+            ${q1Options.map(opt => {
+              const isSelected = state.answers.q1 === opt.id;
+              let btnStyle = 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-sky-50/70';
+              if (state.checked.q1) {
+                if (opt.id === 'A') {
+                  btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-200';
+                } else if (isSelected && opt.id !== 'A') {
+                  btnStyle = 'bg-rose-50 border-rose-500 text-rose-950';
+                } else {
+                  btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-75';
+                }
+              } else if (isSelected) {
+                btnStyle = 'bg-sky-50 border-sky-500 text-sky-950 ring-2 ring-sky-200';
+              }
+
+              return `
+                <button type="button" onclick="selectMCQ('q1', '${opt.id}')" ${state.checked.q1 ? 'disabled' : ''}
+                  class="touch-btn w-full text-left p-3.5 rounded-2xl border-2 flex items-start gap-3 ${btnStyle}">
+                  <span class="w-7 h-7 rounded-lg font-black text-sm flex items-center justify-center flex-shrink-0 mt-0.5
+                    ${isSelected ? 'bg-sky-600 text-white' : 'bg-white border border-slate-300 text-slate-700'}">
+                    ${opt.id}
+                  </span>
+                  <span class="text-sm sm:text-[15px] font-semibold leading-relaxed">${opt.text}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${!state.checked.q1 ? `
+            <button type="button" onclick="submitMCQ('q1', 'A', 1)"
+              class="touch-btn w-full mt-4 py-3 px-5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-sm sm:text-base shadow">
+              ✔️ Chốt đáp án Câu 1
+            </button>
+          ` : `
+            <div class="mt-4 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-700 leading-relaxed">
+              <div class="font-extrabold text-emerald-800 mb-1">🔬 Giải mã thiên nhiên:</div>
+              Ở trạng thái rắn (nước đá), mỗi phân tử H<sub>2</sub>O liên kết hydrogen với 4 phân tử H<sub>2</sub>O xung quanh theo cấu trúc tứ diện đều, tạo ra nhiều <strong>khoảng trống</strong>. Nhờ vậy nước đá có thể tích lớn hơn và khối lượng riêng nhỏ hơn nước lỏng (~0,92 g/cm<sup>3</sup> so với 1,00 g/cm<sup>3</sup>) nên nổi lên trên!
+            </div>
+          `}
+        </div>
+
+        <!-- CÂU 2 -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-sky-100 text-sky-800 font-extrabold text-xs">Câu 2 • 10 điểm</span>
+            ${state.checked.q2 ? (state.answers.q2 === 'B'
+              ? '<span class="text-emerald-600 font-black text-sm">✅ +10 điểm</span>'
+              : '<span class="text-rose-600 font-black text-sm">❌ 0 điểm</span>') : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-3.5">
+            Để hình thành được <strong>liên kết hydrogen</strong> giữa các phân tử, điều kiện tiên quyết nào sau đây phải được thỏa mãn?
+          </p>
+
+          <div class="space-y-2.5">
+            ${q2Options.map(opt => {
+              const isSelected = state.answers.q2 === opt.id;
+              let btnStyle = 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-sky-50/70';
+              if (state.checked.q2) {
+                if (opt.id === 'B') {
+                  btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-200';
+                } else if (isSelected && opt.id !== 'B') {
+                  btnStyle = 'bg-rose-50 border-rose-500 text-rose-950';
+                } else {
+                  btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-75';
+                }
+              } else if (isSelected) {
+                btnStyle = 'bg-sky-50 border-sky-500 text-sky-950 ring-2 ring-sky-200';
+              }
+
+              return `
+                <button type="button" onclick="selectMCQ('q2', '${opt.id}')" ${state.checked.q2 ? 'disabled' : ''}
+                  class="touch-btn w-full text-left p-3.5 rounded-2xl border-2 flex items-start gap-3 ${btnStyle}">
+                  <span class="w-7 h-7 rounded-lg font-black text-sm flex items-center justify-center flex-shrink-0 mt-0.5
+                    ${isSelected ? 'bg-sky-600 text-white' : 'bg-white border border-slate-300 text-slate-700'}">
+                    ${opt.id}
+                  </span>
+                  <span class="text-sm sm:text-[15px] font-semibold leading-relaxed">${opt.text}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${!state.checked.q2 ? `
+            <button type="button" onclick="submitMCQ('q2', 'B', 1)"
+              class="touch-btn w-full mt-4 py-3 px-5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-sm sm:text-base shadow">
+              ✔️ Chốt đáp án Câu 2
+            </button>
+          ` : `
+            <div class="mt-4 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-700 leading-relaxed">
+              <div class="font-extrabold text-emerald-800 mb-1">🔬 Mẹo ghi nhớ nhanh:</div>
+              Liên kết hydrogen chỉ xuất hiện khi nguyên tử <strong>H</strong> gắn với nguyên tử có độ âm điện rất lớn và bán kính nhỏ là <strong>F, O, N</strong> (tạo nên H mang một phần điện tích dương δ<sup>+</sup>), bị hút tĩnh điện bởi cặp electron hóa trị riêng của nguyên tử <strong>F, O, N</strong> (δ<sup>−</sup>) ở phân tử khác!
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function selectMCQ(qKey, optionId) {
+      if (state.checked[qKey]) return;
+      playClickSound();
+      state.answers[qKey] = optionId;
+      render();
+    }
+
+    function submitMCQ(qKey, correctId, stageNum) {
+      if (!state.answers[qKey]) {
+        showToast('Bạn hãy chạm chọn một phương án trước khi chốt đáp án nhé!', '👆');
+        return;
+      }
+      state.checked[qKey] = true;
+      if (state.answers[qKey] === correctId) {
+        state.stageScores[stageNum] += 10;
+        playCorrectSound();
+      } else {
+        playWrongSound();
+      }
+      render();
+    }
+
+    /* =========================================================================
+       CHẶNG 2: SA MẠC LỬA (SẮP XẾP THỨ TỰ + TRẮC NGHIỆM ĐỘ TAN - 20 ĐIỂM)
+       ========================================================================= */
+    function renderStage2HTML() {
+      const substances = [
+        { id: 'CH4', formula: 'CH<sub>4</sub>', name: 'Methane (khí thiên nhiên)', hint: 'Phân tử không phân cực' },
+        { id: 'H2S', formula: 'H<sub>2</sub>S', name: 'Hydrogen sulfide (mùi trứng thối)', hint: 'Phân tử phân cực, không có liên kết H' },
+        { id: 'H2O', formula: 'H<sub>2</sub>O', name: 'Nước tinh khiết', hint: 'Có liên kết hydrogen liên phân tử' }
+      ];
+
+      const orderList = state.answers.q3Order; // Ví dụ: ['CH4', 'H2S', 'H2O']
+      const isQ3Correct = orderList.length === 3 && orderList[0] === 'CH4' && orderList[1] === 'H2S' && orderList[2] === 'H2O';
+
+      const q4Options = [
+        {
+          id: 'A',
+          text: 'Ethanol (C<sub>2</sub>H<sub>5</sub>OH) tan vô hạn trong nước vì nhóm –OH tạo được liên kết hydrogen với phân tử H<sub>2</sub>O; còn ethane (C<sub>2</sub>H<sub>6</sub>) hầu như không tan.'
+        },
+        {
+          id: 'B',
+          text: 'Ethane (C<sub>2</sub>H<sub>6</sub>) tan tốt trong nước hơn ethanol vì có nhiều nguyên tử hydrogen hơn nên tạo nhiều liên kết hydrogen hơn.'
+        },
+        {
+          id: 'C',
+          text: 'Cả hai chất đều tan vô hạn trong nước do có khối lượng phân tử xấp xỉ bằng nhau (30 và 46 amu).'
+        },
+        {
+          id: 'D',
+          text: 'Ethanol không tan trong nước vì gốc hydrocarbon C<sub>2</sub>H<sub>5</sub>– đẩy hoàn toàn các phân tử nước.'
+        }
+      ];
+
+      return `
+        <!-- CÂU 3: SẮP XẾP THỨ TỰ NHIỆT ĐỘ SÔI TĂNG DẦN -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-amber-100 text-amber-900 font-extrabold text-xs">Câu 3 • 10 điểm • Chạm xếp thứ tự</span>
+            ${state.checked.q3 ? (isQ3Correct
+              ? '<span class="text-emerald-600 font-black text-sm">✅ +10 điểm</span>'
+              : '<span class="text-rose-600 font-black text-sm">❌ 0 điểm</span>') : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-2">
+            Hãy chạm lần lượt vào các chất dưới đây để sắp xếp theo chiều <strong>nhiệt độ sôi TĂNG DẦN</strong> (từ thấp nhất đến cao nhất):
+          </p>
+          <p class="text-xs sm:text-sm text-slate-500 font-semibold mb-3.5">
+            👉 Chạm vào thẻ chất để gán thứ tự <strong>1 → 2 → 3</strong> (chạm lại để bỏ chọn).
+          </p>
+
+          <div class="space-y-2.5">
+            ${substances.map(sub => {
+              const rankIndex = orderList.indexOf(sub.id); // -1 nếu chưa chọn, 0, 1, 2
+              const isPicked = rankIndex !== -1;
+              let cardClass = 'bg-slate-50 border-slate-200 hover:bg-amber-50/60';
+              if (state.checked.q3) {
+                const correctPos = ['CH4', 'H2S', 'H2O'].indexOf(sub.id);
+                if (rankIndex === correctPos) {
+                  cardClass = 'bg-emerald-50 border-emerald-500';
+                } else {
+                  cardClass = 'bg-rose-50 border-rose-400';
+                }
+              } else if (isPicked) {
+                cardClass = 'bg-amber-50 border-amber-500 ring-2 ring-amber-200';
+              }
+
+              return `
+                <button type="button" onclick="toggleOrderSubstance('${sub.id}')" ${state.checked.q3 ? 'disabled' : ''}
+                  class="touch-btn w-full text-left p-3.5 rounded-2xl border-2 flex items-center justify-between gap-3 ${cardClass}">
+                  <div>
+                    <div class="font-black text-base sm:text-lg text-slate-800">${sub.formula} <span class="text-sm font-bold text-slate-600">– ${sub.name}</span></div>
+                    <div class="text-xs font-semibold text-slate-500 mt-0.5">${sub.hint}</div>
+                  </div>
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-base flex-shrink-0
+                    ${isPicked ? 'bg-amber-500 text-white shadow' : 'bg-white border-2 border-dashed border-slate-300 text-slate-400'}">
+                    ${isPicked ? `#${rankIndex + 1}` : '?'}
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- Thanh xem trước thứ tự đã chọn -->
+          <div class="mt-3 p-3 rounded-xl bg-slate-100 flex items-center justify-between gap-2 text-sm font-extrabold text-slate-700">
+            <span>Thứ tự của bạn:</span>
+            <span class="text-amber-700">
+              ${orderList.length === 0 ? 'Chưa chọn chất nào' : orderList.map(id => substances.find(s => s.id === id).formula).join('  <  ')}
+            </span>
+          </div>
+
+          ${!state.checked.q3 ? `
+            <button type="button" onclick="submitQ3()"
+              class="touch-btn w-full mt-3.5 py-3 px-5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-sm sm:text-base shadow">
+              ✔️ Chốt thứ tự Câu 3
+            </button>
+          ` : `
+            <div class="mt-4 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-700 leading-relaxed">
+              <div class="font-extrabold text-emerald-800 mb-1">🌡️ Đáp án chuẩn: CH<sub>4</sub> (-161,5°C) &lt; H<sub>2</sub>S (-60°C) &lt; H<sub>2</sub>O (100°C)</div>
+              • <strong>CH<sub>4</sub></strong> không phân cực, chỉ có tương tác Van der Waals rất yếu nên sôi ở nhiệt độ cực thấp.<br/>
+              • <strong>H<sub>2</sub>S</strong> phân cực hơn nên tương tác Van der Waals lớn hơn CH<sub>4</sub>, nhưng S có độ âm điện nhỏ nên không tạo liên kết hydrogen.<br/>
+              • <strong>H<sub>2</sub>O</strong> tạo được liên kết hydrogen liên phân tử bền vững nên cần nhiều nhiệt năng để tách các phân tử khi sôi (100°C).
+            </div>
+          `}
+        </div>
+
+        <!-- CÂU 4: ĐỘ TAN CỦA ETHANOL VÀ ETHANE -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-amber-100 text-amber-900 font-extrabold text-xs">Câu 4 • 10 điểm</span>
+            ${state.checked.q4 ? (state.answers.q4 === 'A'
+              ? '<span class="text-emerald-600 font-black text-sm">✅ +10 điểm</span>'
+              : '<span class="text-rose-600 font-black text-sm">❌ 0 điểm</span>') : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-3.5">
+            Trong bình chứa nước trên sa mạc, nhận định nào giải thích chính xác sự khác biệt về khả năng hòa tan giữa <strong>ethanol (C<sub>2</sub>H<sub>5</sub>OH)</strong> và <strong>ethane (C<sub>2</sub>H<sub>6</sub>)</strong>?
+          </p>
+
+          <div class="space-y-2.5">
+            ${q4Options.map(opt => {
+              const isSelected = state.answers.q4 === opt.id;
+              let btnStyle = 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-amber-50/70';
+              if (state.checked.q4) {
+                if (opt.id === 'A') {
+                  btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-200';
+                } else if (isSelected && opt.id !== 'A') {
+                  btnStyle = 'bg-rose-50 border-rose-500 text-rose-950';
+                } else {
+                  btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-75';
+                }
+              } else if (isSelected) {
+                btnStyle = 'bg-amber-50 border-amber-500 text-amber-950 ring-2 ring-amber-200';
+              }
+
+              return `
+                <button type="button" onclick="selectMCQ('q4', '${opt.id}')" ${state.checked.q4 ? 'disabled' : ''}
+                  class="touch-btn w-full text-left p-3.5 rounded-2xl border-2 flex items-start gap-3 ${btnStyle}">
+                  <span class="w-7 h-7 rounded-lg font-black text-sm flex items-center justify-center flex-shrink-0 mt-0.5
+                    ${isSelected ? 'bg-amber-500 text-white' : 'bg-white border border-slate-300 text-slate-700'}">
+                    ${opt.id}
+                  </span>
+                  <span class="text-sm sm:text-[15px] font-semibold leading-relaxed">${opt.text}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${!state.checked.q4 ? `
+            <button type="button" onclick="submitMCQ('q4', 'A', 2)"
+              class="touch-btn w-full mt-4 py-3 px-5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-sm sm:text-base shadow">
+              ✔️ Chốt đáp án Câu 4
+            </button>
+          ` : `
+            <div class="mt-4 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-700 leading-relaxed">
+              <div class="font-extrabold text-emerald-800 mb-1">🔬 Giải mã khoa học:</div>
+              Các chất tạo được <strong>liên kết hydrogen với nước</strong> như ethanol (C<sub>2</sub>H<sub>5</sub>OH), ammonia (NH<sub>3</sub>), đường glucose... thường tan rất tốt (thậm chí tan vô hạn) trong nước!
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function toggleOrderSubstance(id) {
+      if (state.checked.q3) return;
+      playClickSound();
+      const idx = state.answers.q3Order.indexOf(id);
+      if (idx !== -1) {
+        state.answers.q3Order.splice(idx, 1);
+      } else {
+        state.answers.q3Order.push(id);
+      }
+      render();
+    }
+
+    function submitQ3() {
+      if (state.answers.q3Order.length < 3) {
+        showToast('Bạn hãy chạm chọn đủ cả 3 chất theo thứ tự tăng dần nhé!', '🌡️');
+        return;
+      }
+      state.checked.q3 = true;
+      const arr = state.answers.q3Order;
+      if (arr[0] === 'CH4' && arr[1] === 'H2S' && arr[2] === 'H2O') {
+        state.stageScores[2] += 10;
+        playCorrectSound();
+      } else {
+        playWrongSound();
+      }
+      render();
+    }
+
+    /* =========================================================================
+       CHẶNG 3: VÁCH ĐÁ CHEO LEO (ĐÚNG / SAI 4 MỆNH ĐỀ - 20 ĐIỂM)
+       ========================================================================= */
+    function renderStage3HTML() {
+      const statements = [
+        {
+          key: 'a',
+          text: 'Hàng triệu sợi lông siêu nhỏ (setae) dưới bàn chân tắc kè tiếp xúc cực gần với bề mặt tường, tạo ra lực hút tĩnh điện lưỡng cực tạm thời và lưỡng cực cảm ứng (tương tác Van der Waals) giúp nó bám chắc mà không cần keo.',
+          correct: true,
+          explain: 'ĐÚNG! Tổng hợp lực Van der Waals từ hàng tỉ đầu lông nano giúp tắc kè nâng được cả trọng lượng cơ thể trên kính trơn.'
+        },
+        {
+          key: 'b',
+          text: 'Tương tác Van der Waals là loại liên kết hóa học rất bền vững, mạnh hơn cả liên kết cộng hóa trị và liên kết ion.',
+          correct: false,
+          explain: 'SAI! Tương tác Van der Waals là lực hút yếu giữa các phân tử, yếu hơn nhiều so với liên kết ion, liên kết cộng hóa trị và yếu hơn cả liên kết hydrogen.'
+        },
+        {
+          key: 'c',
+          text: 'Khi kích thước phân tử và số lượng electron trong phân tử tăng lên, lớp vỏ electron dễ bị biến dạng hơn làm tương tác Van der Waals tăng theo.',
+          correct: true,
+          explain: 'ĐÚNG! Số electron càng nhiều, kích thước phân tử càng lớn thì khả năng xuất hiện lưỡng cực tạm thời càng mạnh.'
+        },
+        {
+          key: 'd',
+          text: 'Các khí hiếm (như He, Ne, Ar) tồn tại ở dạng nguyên tử độc lập nên hoàn toàn không có tương tác Van der Waals giữa các nguyên tử.',
+          correct: false,
+          explain: 'SAI! Sự chuyển động không ngừng của electron vẫn tạo ra các lưỡng cực tạm thời giữa các nguyên tử khí hiếm, giúp khí hiếm có thể hóa lỏng ở nhiệt độ rất thấp.'
+        }
+      ];
+
+      let earnedQ5 = 0;
+      if (state.checked.q5) {
+        statements.forEach(st => {
+          if (state.answers.q5[st.key] === st.correct) earnedQ5 += 5;
+        });
+      }
+
+      return `
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-extrabold text-xs">Câu 5 • 20 điểm (5đ / ý đúng)</span>
+            ${state.checked.q5
+              ? `<span class="text-emerald-700 font-black text-sm">🎯 Đạt ${earnedQ5}/20 điểm</span>`
+              : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-3.5">
+            Quan sát chú tắc kè hoa leo vách kính, hãy đánh giá tính <strong>Đúng</strong> hoặc <strong>Sai</strong> cho từng phát biểu khoa học dưới đây:
+          </p>
+
+          <div class="space-y-3.5">
+            ${statements.map(st => {
+              const userVal = state.answers.q5[st.key]; // true | false | null
+              const isCorrect = userVal === st.correct;
+              let boxBorder = 'border-slate-200 bg-slate-50/70';
+              if (state.checked.q5) {
+                boxBorder = isCorrect ? 'border-emerald-400 bg-emerald-50/50' : 'border-rose-400 bg-rose-50/50';
+              }
+
+              return `
+                <div class="p-3.5 rounded-2xl border-2 ${boxBorder} transition">
+                  <div class="text-sm sm:text-[15px] font-bold text-slate-800 leading-relaxed mb-3">
+                    <span class="inline-block px-2 py-0.5 rounded-md bg-emerald-600 text-white font-black text-xs mr-1.5">${st.key})</span>
+                    ${st.text}
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2.5">
+                    <button type="button" onclick="selectTF('${st.key}', true)" ${state.checked.q5 ? 'disabled' : ''}
+                      class="touch-btn py-2.5 px-3 rounded-xl font-extrabold text-sm border-2 flex items-center justify-center gap-1.5
+                      ${userVal === true
+                        ? 'bg-emerald-600 border-emerald-600 text-white shadow'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-emerald-50'}">
+                      <span>⭕ ĐÚNG</span>
+                    </button>
+
+                    <button type="button" onclick="selectTF('${st.key}', false)" ${state.checked.q5 ? 'disabled' : ''}
+                      class="touch-btn py-2.5 px-3 rounded-xl font-extrabold text-sm border-2 flex items-center justify-center gap-1.5
+                      ${userVal === false
+                        ? 'bg-rose-600 border-rose-600 text-white shadow'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-rose-50'}">
+                      <span>❌ SAI</span>
+                    </button>
+                  </div>
+
+                  ${state.checked.q5 ? `
+                    <div class="mt-2.5 pt-2.5 border-t border-slate-200/80 text-xs sm:text-sm font-semibold leading-relaxed ${isCorrect ? 'text-emerald-800' : 'text-rose-800'}">
+                      ${isCorrect ? '✅ Chính xác (+5đ): ' : '💡 Giải thích: '} ${st.explain}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          ${!state.checked.q5 ? `
+            <button type="button" onclick="submitQ5()"
+              class="touch-btn w-full mt-4 py-3.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm sm:text-base shadow">
+              ✔️ Chốt 4 đáp án Đúng/Sai
+            </button>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function selectTF(key, boolVal) {
+      if (state.checked.q5) return;
+      playClickSound();
+      state.answers.q5[key] = boolVal;
+      render();
+    }
+
+    function submitQ5() {
+      const a = state.answers.q5;
+      if (a.a === null || a.b === null || a.c === null || a.d === null) {
+        showToast('Bạn hãy chọn Đúng hoặc Sai cho đầy đủ cả 4 ý a, b, c, d nhé!', '🦎');
+        return;
+      }
+      state.checked.q5 = true;
+      const keyMap = { a: true, b: false, c: true, d: false };
+      let pts = 0;
+      Object.keys(keyMap).forEach(k => {
+        if (a[k] === keyMap[k]) pts += 5;
+      });
+      state.stageScores[3] += pts;
+      if (pts >= 15) playCorrectSound(); else playWrongSound();
+      render();
+    }
+
+    /* =========================================================================
+       CHẶNG 4: ĐẦM LẦY KHÍ HIẾM & HALOGEN (2 CÂU GIẢI MÃ THỰC TẾ - 20 ĐIỂM)
+       ========================================================================= */
+    function renderStage4HTML() {
+      const q6Options = [
+        {
+          id: 'A',
+          text: 'Do từ F<sub>2</sub> đến I<sub>2</sub>, khối lượng phân tử và kích thước vỏ electron tăng dần làm tăng tương tác Van der Waals giữa các phân tử.'
+        },
+        {
+          id: 'B',
+          text: 'Do từ F<sub>2</sub> đến I<sub>2</sub>, độ âm điện của nguyên tử tăng dần tạo nên liên kết hydrogen ngày càng bền chặt.'
+        },
+        {
+          id: 'C',
+          text: 'Do phân tử I<sub>2</sub> có liên kết ion còn phân tử F<sub>2</sub> và Cl<sub>2</sub> chỉ có liên kết cộng hóa trị không cực.'
+        },
+        {
+          id: 'D',
+          text: 'Do nhiệt độ trong đầm lầy giảm đột ngột khi đi từ fluorine đến iodine khiến iodine đóng băng.'
+        }
+      ];
+
+      const q7Options = [
+        {
+          id: 'A',
+          text: 'Liên kết ion giữa các nguyên tử phosphorus và nguyên tử nitrogen.'
+        },
+        {
+          id: 'B',
+          text: 'Liên kết hydrogen giữa các cặp base bổ sung (A liên kết với T bằng 2 liên kết hydrogen; G liên kết với C bằng 3 liên kết hydrogen).'
+        },
+        {
+          id: 'C',
+          text: 'Liên kết kim loại giữa các nguyên tử carbon trên khung đường – phosphate.'
+        },
+        {
+          id: 'D',
+          text: 'Liên kết cộng hóa trị ba (N≡N) nối trực tiếp hai mạch đơn DNA với nhau.'
+        }
+      ];
+
+      return `
+        <!-- CÂU 6 -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-indigo-100 text-indigo-900 font-extrabold text-xs">Câu 6 • 10 điểm</span>
+            ${state.checked.q6 ? (state.answers.q6 === 'A'
+              ? '<span class="text-emerald-600 font-black text-sm">✅ +10 điểm</span>'
+              : '<span class="text-rose-600 font-black text-sm">❌ 0 điểm</span>') : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-3.5">
+            Ở điều kiện thường (25°C), các đơn chất halogen biến đổi trạng thái ngoạn mục: <strong>F<sub>2</sub></strong> và <strong>Cl<sub>2</sub></strong> ở thể khí, <strong>Br<sub>2</sub></strong> ở thể lỏng, còn <strong>I<sub>2</sub></strong> ở thể rắn. Nguyên nhân nào quyết định sự biến đổi này?
+          </p>
+
+          <div class="space-y-2.5">
+            ${q6Options.map(opt => {
+              const isSelected = state.answers.q6 === opt.id;
+              let btnStyle = 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-indigo-50/70';
+              if (state.checked.q6) {
+                if (opt.id === 'A') {
+                  btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-200';
+                } else if (isSelected && opt.id !== 'A') {
+                  btnStyle = 'bg-rose-50 border-rose-500 text-rose-950';
+                } else {
+                  btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-75';
+                }
+              } else if (isSelected) {
+                btnStyle = 'bg-indigo-50 border-indigo-500 text-indigo-950 ring-2 ring-indigo-200';
+              }
+
+              return `
+                <button type="button" onclick="selectMCQ('q6', '${opt.id}')" ${state.checked.q6 ? 'disabled' : ''}
+                  class="touch-btn w-full text-left p-3.5 rounded-2xl border-2 flex items-start gap-3 ${btnStyle}">
+                  <span class="w-7 h-7 rounded-lg font-black text-sm flex items-center justify-center flex-shrink-0 mt-0.5
+                    ${isSelected ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-300 text-slate-700'}">
+                    ${opt.id}
+                  </span>
+                  <span class="text-sm sm:text-[15px] font-semibold leading-relaxed">${opt.text}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${!state.checked.q6 ? `
+            <button type="button" onclick="submitMCQ('q6', 'A', 4)"
+              class="touch-btn w-full mt-4 py-3 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm sm:text-base shadow">
+              ✔️ Chốt đáp án Câu 6
+            </button>
+          ` : `
+            <div class="mt-4 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-700 leading-relaxed">
+              <div class="font-extrabold text-emerald-800 mb-1">🔬 Giải mã thiên nhiên:</div>
+              Các phân tử halogen (F<sub>2</sub>, Cl<sub>2</sub>, Br<sub>2</sub>, I<sub>2</sub>) đều không phân cực và không có liên kết hydrogen. Khi đi từ F<sub>2</sub> đến I<sub>2</sub>, bán kính nguyên tử và số electron tăng mạnh → <strong>tương tác Van der Waals tăng</strong> → nhiệt độ nóng chảy và nhiệt độ sôi tăng dần!
+            </div>
+          `}
+        </div>
+
+        <!-- CÂU 7 -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-indigo-100 text-indigo-900 font-extrabold text-xs">Câu 7 • 10 điểm</span>
+            ${state.checked.q7 ? (state.answers.q7 === 'B'
+              ? '<span class="text-emerald-600 font-black text-sm">✅ +10 điểm</span>'
+              : '<span class="text-rose-600 font-black text-sm">❌ 0 điểm</span>') : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-3.5">
+            Trong cấu trúc xoắn kép của phân tử <strong>DNA</strong> (vật chất di truyền của mọi sinh vật sống), loại liên kết nào đóng vai trò như chiếc <em>"khóa kéo thông minh"</em> giữ hai mạch đơn với nhau nhưng vẫn đủ linh hoạt để tách ra khi tế bào nhân đôi?
+          </p>
+
+          <div class="space-y-2.5">
+            ${q7Options.map(opt => {
+              const isSelected = state.answers.q7 === opt.id;
+              let btnStyle = 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-indigo-50/70';
+              if (state.checked.q7) {
+                if (opt.id === 'B') {
+                  btnStyle = 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-200';
+                } else if (isSelected && opt.id !== 'B') {
+                  btnStyle = 'bg-rose-50 border-rose-500 text-rose-950';
+                } else {
+                  btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-75';
+                }
+              } else if (isSelected) {
+                btnStyle = 'bg-indigo-50 border-indigo-500 text-indigo-950 ring-2 ring-indigo-200';
+              }
+
+              return `
+                <button type="button" onclick="selectMCQ('q7', '${opt.id}')" ${state.checked.q7 ? 'disabled' : ''}
+                  class="touch-btn w-full text-left p-3.5 rounded-2xl border-2 flex items-start gap-3 ${btnStyle}">
+                  <span class="w-7 h-7 rounded-lg font-black text-sm flex items-center justify-center flex-shrink-0 mt-0.5
+                    ${isSelected ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-300 text-slate-700'}">
+                    ${opt.id}
+                  </span>
+                  <span class="text-sm sm:text-[15px] font-semibold leading-relaxed">${opt.text}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${!state.checked.q7 ? `
+            <button type="button" onclick="submitMCQ('q7', 'B', 4)"
+              class="touch-btn w-full mt-4 py-3 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm sm:text-base shadow">
+              ✔️ Chốt đáp án Câu 7
+            </button>
+          ` : `
+            <div class="mt-4 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-700 leading-relaxed">
+              <div class="font-extrabold text-emerald-800 mb-1">🧬 Kỳ quan sinh học phân tử:</div>
+              Nhờ độ bền vừa phải của <strong>liên kết hydrogen</strong> (yếu hơn liên kết cộng hóa trị nhưng đủ lớn khi có hàng triệu liên kết hợp sức), chuỗi xoắn kép DNA vừa ổn định cấu trúc di truyền vừa dễ dàng tháo xoắn dưới tác dụng của enzyme để nhân đôi!
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       CHẶNG 5: ĐỈNH NÚI TRÍ TUỆ (ĐIỀN THẺ TỪ KHÓA VÀO CHỖ TRỐNG - 20 ĐIỂM)
+       ========================================================================= */
+    const Q8_CHIPS = [
+      { id: 'dots', label: 'dấu ba chấm (⋯)' },
+      { id: 'covalent', label: 'liên kết cộng hóa trị' },
+      { id: 'vdw', label: 'tương tác Van der Waals' },
+      { id: 'boil', label: 'nhiệt độ sôi' },
+      { id: 'solid', label: 'nét liền đậm (—)' },
+      { id: 'decrease', label: 'giảm mạnh' }
+    ];
+
+    const Q8_CORRECT = ['dots', 'covalent', 'vdw', 'boil'];
+
+    function renderStage5HTML() {
+      const blanks = state.answers.q8Blanks;
+      let earnedQ8 = 0;
+      if (state.checked.q8) {
+        blanks.forEach((b, idx) => {
+          if (b === Q8_CORRECT[idx]) earnedQ8 += 5;
+        });
+      }
+
+      const renderBlankSlot = (index) => {
+        const chipId = blanks[index];
+        const chipObj = Q8_CHIPS.find(c => c.id === chipId);
+        const isActive = !state.checked.q8 && state.activeBlankIndex === index;
+
+        let slotStyle = 'bg-amber-50 border-amber-400 text-amber-900';
+        if (state.checked.q8) {
+          slotStyle = (chipId === Q8_CORRECT[index])
+            ? 'bg-emerald-100 border-emerald-500 text-emerald-900'
+            : 'bg-rose-100 border-rose-500 text-rose-900';
+        } else if (isActive) {
+          slotStyle = 'bg-sky-100 border-sky-500 text-sky-900 pulse-target';
+        } else if (chipObj) {
+          slotStyle = 'bg-emerald-50 border-emerald-500 text-emerald-900';
+        }
+
+        return `
+          <button type="button" onclick="selectBlankSlot(${index})" ${state.checked.q8 ? 'disabled' : ''}
+            class="inline-flex items-center justify-center min-h-[38px] px-3 py-1 my-1 mx-0.5 rounded-xl border-2 border-dashed font-extrabold text-sm align-middle transition ${slotStyle}">
+            ${chipObj ? `<span>(${index + 1}) ${chipObj.label}</span>` : `<span>[ Ô trống (${index + 1}) ]</span>`}
+          </button>
+        `;
+      };
+
+      return `
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="px-3 py-1 rounded-xl bg-rose-100 text-rose-900 font-extrabold text-xs">Câu 8 • 20 điểm (5đ / ô đúng)</span>
+            ${state.checked.q8
+              ? `<span class="text-emerald-700 font-black text-sm">🎯 Đạt ${earnedQ8}/20 điểm</span>`
+              : ''}
+          </div>
+
+          <p class="font-extrabold text-slate-800 text-base sm:text-[17px] leading-relaxed mb-2">
+            Hãy chạm vào các <strong>Thẻ Từ Khóa</strong> bên dưới để lắp ghép hoàn chỉnh mật mã mở rương kho báu trên Đỉnh Núi Trí Tuệ:
+          </p>
+          <p class="text-xs sm:text-sm text-slate-500 font-semibold mb-3.5">
+            👉 Chạm vào ô trống muốn điền, sau đó chạm vào thẻ từ khóa tương ứng (chạm vào ô đã điền để xóa).
+          </p>
+
+          <!-- Đoạn văn mật mã có 4 chỗ trống -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-50/80 via-white to-sky-50/80 border-2 border-amber-200/80 text-slate-800 text-[15px] sm:text-base font-bold leading-loose">
+            “Trong hóa học, liên kết hydrogen thường được biểu diễn bằng ký hiệu
+            ${renderBlankSlot(0)}
+            giữa nguyên tử H (đã liên kết với F, O hoặc N) và nguyên tử F, O, N của phân tử khác. Về độ bền, liên kết hydrogen yếu hơn liên kết ion và
+            ${renderBlankSlot(1)}
+            nhưng lại mạnh hơn
+            ${renderBlankSlot(2)}.
+            Sự xuất hiện của hai loại tương tác liên phân tử này làm tăng nhiệt độ nóng chảy và
+            ${renderBlankSlot(3)}
+            của các chất trong tự nhiên.”
+          </div>
+
+          <!-- Kho thẻ từ khóa chạm chọn -->
+          ${!state.checked.q8 ? `
+            <div class="mt-4">
+              <div class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2">
+                🧩 Kho Thẻ Từ Khóa (Đang chọn điền vào Ô trống số ${state.activeBlankIndex + 1}):
+              </div>
+              <div class="flex flex-wrap gap-2">
+                ${Q8_CHIPS.map(chip => {
+                  const isUsed = blanks.includes(chip.id);
+                  return `
+                    <button type="button" onclick="pickChipForBlank('${chip.id}')" ${isUsed ? 'disabled' : ''}
+                      class="touch-btn px-3.5 py-2.5 rounded-xl font-extrabold text-sm border-2 transition
+                      ${isUsed
+                        ? 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
+                        : 'bg-white border-sky-300 text-slate-800 hover:bg-sky-50 hover:border-sky-500 shadow-sm'}">
+                      ${chip.label}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <button type="button" onclick="submitQ8()"
+              class="touch-btn w-full mt-5 py-3.5 px-5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white font-extrabold text-sm sm:text-base shadow-md">
+              🔓 MỞ KHÓA RƯƠNG KHO BÁU (CHỐT ĐÁP ÁN)
+            </button>
+          ` : `
+            <div class="mt-4 p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-700 leading-relaxed">
+              <div class="font-extrabold text-emerald-800 mb-1">🏆 Đáp án chuẩn mở khóa rương báu:</div>
+              (1) <strong>dấu ba chấm (⋯)</strong> → (2) <strong>liên kết cộng hóa trị</strong> → (3) <strong>tương tác Van der Waals</strong> → (4) <strong>nhiệt độ sôi</strong>.<br/>
+              <span class="text-xs text-slate-600 mt-1 inline-block">Thứ tự độ bền: Liên kết ion / cộng hóa trị &gt; Liên kết hydrogen &gt; Tương tác Van der Waals.</span>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function selectBlankSlot(index) {
+      if (state.checked.q8) return;
+      playClickSound();
+      // Nếu ô đó đã có từ khóa, chạm vào sẽ xóa từ khóa đó và đặt focus tại ô này
+      if (state.answers.q8Blanks[index] !== null) {
+        state.answers.q8Blanks[index] = null;
+      }
+      state.activeBlankIndex = index;
+      render();
+    }
+
+    function pickChipForBlank(chipId) {
+      if (state.checked.q8) return;
+      playClickSound();
+      state.answers.q8Blanks[state.activeBlankIndex] = chipId;
+      // Tự động nhảy sang ô trống tiếp theo chưa điền
+      const nextEmpty = state.answers.q8Blanks.findIndex(val => val === null);
+      if (nextEmpty !== -1) {
+        state.activeBlankIndex = nextEmpty;
+      }
+      render();
+    }
+
+    function submitQ8() {
+      if (state.answers.q8Blanks.includes(null)) {
+        showToast('Bạn hãy điền đầy đủ cả 4 ô trống để mở khóa rương kho báu nhé!', '🔐');
+        return;
+      }
+      state.checked.q8 = true;
+      let pts = 0;
+      state.answers.q8Blanks.forEach((b, idx) => {
+        if (b === Q8_CORRECT[idx]) pts += 5;
+      });
+      state.stageScores[5] += pts;
+      if (pts >= 15) playCorrectSound(); else playWrongSound();
+      render();
+    }
+
+    /* =========================================================================
+       8. MÀN HÌNH TỔNG KẾT & THẺ CHỨNG NHẬN NHÀ THÁM HIỂM
+       ========================================================================= */
+    function renderSummaryScreen() {
+      const total = getTotalScore();
+      let rankTitle = '';
+      let rankBadge = '';
+      let rankMessage = '';
+
+      if (total >= 90) {
+        rankTitle = 'BẬC THẦY GIẢI MÃ TỰ NHIÊN';
+        rankBadge = '👑 Huyền Thoại Hóa Học';
+        rankMessage = 'Xuất sắc tuyệt đối! Bạn đã làm chủ hoàn toàn kiến thức về liên kết hydrogen và tương tác Van der Waals như một nhà khoa học thực thụ!';
+      } else if (total >= 70) {
+        rankTitle = 'NHÀ THÁM HIỂM TÀI BA';
+        rankBadge = '🌟 Chuyên Gia Khám Phá';
+        rankMessage = 'Rất ấn tượng! Bạn đã vận dụng vững vàng kiến thức hóa học để giải thích nhiều hiện tượng kỳ thú trong thiên nhiên!';
+      } else {
+        rankTitle = 'TẬP SỰ KHÁM PHÁ';
+        rankBadge = '🌱 Nhà Thám Hiểm Triển Vọng';
+        rankMessage = 'Chúc mừng bạn đã hoàn thành hành trình! Hãy thử chơi lại một lần nữa để chinh phục trọn vẹn 100 điểm nhé!';
+      }
+
+      const today = new Date();
+      const dateStr = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+
+      const main = document.getElementById('main-content');
+      main.innerHTML = `
+        <div class="space-y-4 animate-pop">
+          <!-- THẺ CHỨNG NHẬN HOÀN THÀNH (DỄ CHỤP MÀN HÌNH NỘP BÀI) -->
+          <div class="certificate-card rounded-3xl p-5 sm:p-6 relative overflow-hidden">
+            <!-- Hoa văn góc trang trí -->
+            <div class="flex items-center justify-between border-b-2 border-emerald-200/80 pb-3 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🏅</span>
+                <div>
+                  <div class="text-[11px] font-black uppercase tracking-wider text-emerald-700">Chứng Nhận Hoàn Thành</div>
+                  <div class="text-xs font-bold text-slate-500">Hóa học 10 • Ngày ${dateStr}</div>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 font-extrabold text-xs border border-amber-300">
+                ${rankBadge}
+              </span>
+            </div>
+
+            <div class="text-center my-3">
+              <div class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Trao tặng Nhà thám hiểm</div>
+              <h2 class="font-display font-black text-2xl sm:text-3xl text-slate-900 mb-1">
+                ${escapeHTML(state.playerName)}
+              </h2>
+              <div class="inline-block px-3.5 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-xs sm:text-sm mb-3">
+                Lớp: ${escapeHTML(state.playerClass)}
+              </div>
+
+              <div class="my-2">
+                <div class="inline-flex flex-col items-center justify-center px-6 py-3 rounded-2xl bg-white border-2 border-amber-300 shadow-sm">
+                  <span class="text-xs font-extrabold uppercase text-slate-500">Tổng điểm chinh phục</span>
+                  <div class="font-display font-black text-4xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-sky-600">
+                    ${total}<span class="text-xl text-slate-400">/100đ</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 font-display font-black text-base sm:text-lg text-amber-700">
+                🎖️ Danh hiệu: ${rankTitle}
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 font-semibold mt-1.5 leading-relaxed">
+                ${rankMessage}
+              </p>
+            </div>
+
+            <!-- Bảng điểm chi tiết 5 chặng -->
+            <div class="mt-4 pt-3.5 border-t border-emerald-200/80">
+              <div class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2.5 text-center">
+                📊 Bảng Điểm Chi Tiết Từng Chặng Đua
+              </div>
+              <div class="space-y-2 text-xs sm:text-sm font-bold">
+                ${GAME_DATA.stages.map(st => {
+                  const sc = state.stageScores[st.id];
+                  const isFull = sc === st.maxPoints;
+                  return `
+                    <div class="flex items-center justify-between gap-2 bg-white/90 px-3 py-2 rounded-xl border border-slate-200/80">
+                      <span class="text-slate-700">${st.icon} Chặng ${st.id}: ${st.shortTitle}</span>
+                      <span class="font-black px-2.5 py-0.5 rounded-lg ${isFull ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">
+                        ${sc}/${st.maxPoints}đ
+                      </span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <div class="mt-4 text-center text-xs font-extrabold text-emerald-700 bg-emerald-100/70 py-2 px-3 rounded-xl">
+              📸 Hãy chụp ảnh màn hình Thẻ Chứng Nhận này để gửi báo cáo cho Giáo viên nhé!
+            </div>
+          </div>
+
+          <!-- Nút Chơi lại để phá kỷ lục -->
+          <button type="button" onclick="resetGame()"
+            class="touch-btn w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-black text-base sm:text-lg shadow-lg flex items-center justify-center gap-2">
+            <span>🔄 CHƠI LẠI ĐỂ PHÁ KỶ LỤC 100 ĐIỂM</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
+    }
+
+    function resetGame() {
+      playClickSound();
+      state = {
+        screen: 'stage',
+        playerName: state.playerName,
+        playerClass: state.playerClass,
+        currentStage: 1,
+        stageScores: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        answers: {
+          q1: null,
+          q2: null,
+          q3Order: [],
+          q4: null,
+          q5: { a: null, b: null, c: null, d: null },
+          q6: null,
+          q7: null,
+          q8Blanks: [null, null, null, null]
+        },
+        checked: {
+          q1: false,
+          q2: false,
+          q3: false,
+          q4: false,
+          q5: false,
+          q6: false,
+          q7: false,
+          q8: false
+        },
+        activeBlankIndex: 0
+      };
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* =========================================================================
+       9. HIỆU ỨNG PHÁO GIẤY CHÚC MỪNG (CONFETTI CANVAS)
+       ========================================================================= */
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#10B981', '#0EA5E9', '#F59E0B', '#F97316', '#EC4899', '#8B5CF6'];
+      const pieces = Array.from({ length: 95 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 9 + 5,
+        h: Math.random() * 6 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speedY: Math.random() * 3.5 + 2,
+        speedX: Math.random() * 2 - 1,
+        rotation: Math.random() * 360,
+        rotSpeed: Math.random() * 8 - 4
+      }));
+
+      let frame = 0;
+      function animateConfetti() {
+        frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rotation += p.rotSpeed;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        if (frame < 180) {
+          requestAnimationFrame(animateConfetti);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animateConfetti();
+    }
+
+    /* =========================================================================
+       10. HÀM RENDER CHÍNH
+       ========================================================================= */
+    function render() {
+      updateHeader();
+      if (state.screen === 'welcome') {
+        renderWelcomeScreen();
+      } else if (state.screen === 'stage') {
+        renderStageScreen();
+      } else if (state.screen === 'summary') {
+        renderSummaryScreen();
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      const canvas = document.getElementById('confetti-canvas');
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+    });
+
+    // Khởi chạy ứng dụng khi tải xong trang
+    window.onload = function() {
+      render();
+    };
+  </script>
+</body>
+</html>
